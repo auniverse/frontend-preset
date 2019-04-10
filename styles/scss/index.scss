@@ -1,0 +1,17 @@
+@import "imports";
+@import "mixins";
+
+html, body {
+  height: 100%;
+}
+
+.page {
+  overflow-x: hidden;
+  min-height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+
+  &-footer {
+    margin-top: auto;
+  }
+}
