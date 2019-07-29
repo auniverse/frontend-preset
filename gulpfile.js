@@ -21,6 +21,7 @@ const
         watch: {
             sass: 'styles/scss/**/*.scss',
             js: 'scripts/src/main.js',
+            php: '*.php'
         },
         build: {
             css: 'styles/css/',
@@ -54,7 +55,7 @@ function browser_sync()
         proxy: path.devUrl
     });
 
-    gulp.watch("*.php").on('change', browserSync.reload);
+    gulp.watch(path.watch.php).on('change', browserSync.reload);
 }
 
 gulp.task('css:build', () => {
