@@ -11,6 +11,7 @@ const
     browserify = require('browserify'),
     babelify = require('babelify'),
     source = require('vinyl-source-stream'),
+    notifier = require('node-notifier'),
 
     path = {
         devUrl: 'localurl.au',
@@ -21,7 +22,7 @@ const
         watch: {
             sass: 'styles/scss/**/*.scss',
             js: 'scripts/src/main.js',
-            php: '*.php'
+            tpl: '*.php'
         },
         build: {
             css: 'styles/css/',
@@ -55,7 +56,7 @@ function browser_sync()
         proxy: path.devUrl
     });
 
-    gulp.watch(path.watch.php).on('change', browserSync.reload);
+    gulp.watch(path.watch.tpl).on('change', browserSync.reload);
 }
 
 gulp.task('css:build', () => {
@@ -77,6 +78,16 @@ gulp.task('js:build', () => {
         browserify({ entries: path.src.js })
             .transform(babelify, { presets: ['es2015'] })
             .bundle()
+            .on('error', (err) => {
+                console.log(err.stack);
+
+                notifier.notify({
+                    'title': 'Compile Error',
+                    'message': err.message
+                });
+
+                this.emit('end');
+            })
             .pipe(source('app.js'))
             .pipe(gulp.dest(path.build.js))
             .pipe(browserSync.stream())
@@ -89,5 +100,5 @@ function watch()
     gulp.watch(path.watch.js, gulp.series('js:build'));
 }
 
-gulp.task('run:browser-sync', gulp.series(browser_sync, watch));
+gulp.task('run:browser-sync', gulp.parallel(browser_sync, watch));
 gulp.task('run:default', gulp.series(watch));
